@@ -5,6 +5,6 @@ class Parser extends CI_Controller {
 		$parser = new storyParser();
 		$parser->parseStores();
 
-		$this->load->view('welcome_message');
+		$this->load->view('stories_parser');
 	}
 }

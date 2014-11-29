@@ -3,6 +3,9 @@
 class Storyparser {
 	public function parseStores() {
 		$response = \Httpful\Request::get('http://devapi.aljazeera.com/v1/en/stories/latest?format=json&apikey=UBsPSKqownYvsDaE9l96Jq1aAOQOHXgF')->send();
-		error_log("RESPONSE: " . json_encode($response));
+		
+		foreach ($response->body->stories as $story) {
+			error_log("STORY: " . json_encode($story));
+		}
 	}
 }
