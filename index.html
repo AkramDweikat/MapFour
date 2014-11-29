@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title>MapFour</title>
+  	<link rel="stylesheet" type="text/css" href="main.css">
+  </head>
+  <body>
+  	<div id="map-wrapper">
+  		<div id="map-content">
+  			<div id="map-content-close"><img src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-close-circled-20.png"></div>
+  		</div>
+		<div id="map-canvas"></div>
+	</div>
+	<div id="timeline">
+		<div id="timeline-canvas">
+			<div class="timeline-event" data-offset="100">
+				<h2 class="timeline-event-title">Ebola title</h2>
+			</div>
+
+			<div class="timeline-event selected" data-offset="300">
+				<h2 class="timeline-event-title">Ebola title 2</h2>
+			</div>
+			<div id="timeline-dates">
+				<div class="timeline-date">1890</div>
+				<div class="timeline-date">1900</div>
+				<div class="timeline-date">1910</div>
+				<div class="timeline-date">1920</div>
+				<div class="timeline-date">1930</div>
+				<div class="timeline-date">1940</div>
+				<div class="timeline-date">1950</div>
+				<div class="timeline-date">1960</div>
+				<div class="timeline-date">1970</div>
+			</div>
+		</div>
+		<div id="timeline-bottom-border"></div>
+		<div id="timeline-vertical-line"></div>
+	</div>
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+  </body>
+</html>
