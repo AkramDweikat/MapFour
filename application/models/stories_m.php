@@ -26,18 +26,32 @@ class Stories_M extends CI_Model {
     public function insert($data) {
         $this->guid   = $data->guid;
         $this->link   = $data->link;
-        $this->title  = $data->title;
-        $this->description  = $data->description;
-        $this->body  = $data->body;
+        $this->title  = $data->title->{'#cdata-section'};
+        $this->description  = $data->description->{'#cdata-section'};
+        $this->body  = $data->body->{'#cdata-section'};
         $this->largeimage  = $data->largeimage;
         $this->smallimage  = $data->smallimage;
         $this->video  = $data->video;
-        $this->source  = $data->source;
+        $this->source  = $data->source->{'#cdata-section'};
         $this->pubDate  = $data->pubDate;
         $this->author  = $data->author;
 
         $this->db->insert('stories', $this);
-    }
+
+        $story_id = $this->db->insert_id();
+        $this->load->model('Meta_values_M');
+        if(isset($data->metadata)){
+                foreach ($data->metadata as $type => $values) {
+                    if(is_array($values)) {
+                        foreach ($values as $value) {
+                            $this->Meta_values_M->insert($story_id, $type, $value->{'@value'});
+                        }
+                    } else {
+                        $this->Meta_values_M->insert($story_id, $type, $values->{'@value'});
+                    }
+                }
+            }
+        }
 
     public function update($data) {
         $this->db->where('guid', $data->guid);
