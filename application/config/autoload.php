@@ -36,8 +36,8 @@
 |  $autoload['packages'] = array(APPPATH.'third_party', '/usr/local/shared');
 |
 */
-
-$autoload['packages'] = array();
+// $autoload['packages'] = array();
+$autoload['packages'] = array('httpful.phar');
 
 
 /*
@@ -52,7 +52,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array();
+$autoload['libraries'] = array('storyparser');
 
 
 /*
