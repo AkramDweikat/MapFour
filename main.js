@@ -17,6 +17,8 @@ $(function(){
 
   var loadMarkers  = function (url,callback) {
           deleteMarkers();
+          indexes = [];
+          currentIndex = 0;
 
           // start progress bar
           NProgress.start();
@@ -59,6 +61,7 @@ $(function(){
               if(markers[objectKey] !== undefined){
                 articles[objectKey].push(article);
                 markers[objectKey].push(marker);
+                marker.setMap(null);
               } else {
                 articles[objectKey] = [article];
                 markers[objectKey] = [marker];                
@@ -80,6 +83,11 @@ $(function(){
                   loadArticle(articleList[0], marker);
                 }
               });
+
+              if(current !== undefined){
+                $("#content-arrow-right").toggle(indexes[currentIndex+1] !== undefined);
+                $("#content-arrow-left").toggle(indexes[currentIndex-1] !== undefined);
+              }
 
               if(callback !== undefined){                  
                 callback.call();
@@ -301,8 +309,25 @@ $(function(){
  var input = $("<input type='text' id='map_search' />"); 
 
  input.on('keyup', function(e){
-  if(e.keyCode == 13){}
+  console.log(e.keyCode);
+  //enter
+  if(e.keyCode == 13){
+    
+  }
+
+  //esc
+  if(e.keyCode == 27){
+    $(this).trigger('blur');
+  }
  });
+
+ input.on('focus', function(){
+  $(this).animate({width:"250px"},300);
+ })
+
+ input.on('blur', function(){
+  $(this).animate({width:"120px"},50);
+ })
 
  map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(input[0]);
 
@@ -316,6 +341,8 @@ $("#content-arrow-right").on('click', function(){
     loadArticle(articles[indexes[currentIndex+1]][0],true);
   }
 
+  $("#content-arrow-right").toggle(indexes[currentIndex+1] !== undefined);
+
 });
 
 
@@ -327,6 +354,11 @@ $("#content-arrow-left").on('click', function(){
     currentIndex--;
     loadArticle(articles[indexes[currentIndex-1]][0], true);
   }
+  if(indexes[currentIndex-1] !== undefined){
+    $("#content-arrow-left").show();   
+  } else {
+    $("#content-arrow-left").hide();   
+  }
 });
 
   // click on the 'x' and slide sidebar out
@@ -337,10 +369,10 @@ $("#content-arrow-left").on('click', function(){
   // initialize ion slider plugin
   $("#date_range").ionRangeSlider({
       type: "double", // range
-      min: +moment().subtract(1, "years").format("X"),
+      min: +moment().subtract(6, "months").format("X"),
       max: +moment().format("X"),
-      from: +moment().subtract(7, "months").format("X"),
-      to: +moment().subtract(4, "months").format("X"),
+      from: +moment().subtract(4, "months").format("X"),
+      to: +moment().subtract(2, "months").format("X"),
       prettify: function (num) {
           return moment(num, "X").format("LL"); // date format
       },
