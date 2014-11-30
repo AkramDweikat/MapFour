@@ -14,24 +14,27 @@ class Articles_m extends CI_Model {
 
             //create query string
             $this->db->select('stories.id, stories.guid, stories.link, stories.title, stories.description, stories.body, stories.pubDate, stories.latitude,stories.longitude, stories.largeimage, stories.smallimage, stories.source, stories.author, GROUP_CONCAT(meta_values.meta_value SEPARATOR ",") as mv', false);
+
             $this->db->from('stories');
-            $this->db->join("meta_values", "stories.id=meta_values.story_id");
+            if($q!=null){
+                $this->db->join("meta_values", "stories.id=meta_values.story_id and meta_values.meta_value like '".$q."'");
+            }else{
+                $this->db->join("meta_values", "stories.id=meta_values.story_id");
+            }
             //faster time filtering
             $this->db->where("UNIX_TIMESTAMP(`pubDate`) BETWEEN '".$start."' AND '".$end."'");
             $this->db->where("latitude BETWEEN '".$minx."' AND '".$maxx."'");
             $this->db->where("longitude BETWEEN '".$miny."' AND '".$maxy."'");
-
-
+            //check for search term query
 
             $this->db->group_by('stories.id');
+
+
+
+
             $result = $this->db->get();
 
             $articles = $result->result_array();
-
-            //check for search term query
-            if($q!=null){
-                $this->db->like('mv', $q);
-            }
 
         return $articles;
 

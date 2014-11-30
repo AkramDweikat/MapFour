@@ -31,7 +31,8 @@ class Articles extends CI_Controller {
         //return json response to view
         //$this->load->view('frontpage', $data);
 
-        print "<pre>".json_encode($data)."</pre>";
+        print json_encode($data);
+
 
     }
 
