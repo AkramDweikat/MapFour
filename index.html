@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   	<title>MapFour</title>
   	<link rel="stylesheet" type="text/css" href="http://localhost:8000/MapFour/main.css">
   	<link rel="stylesheet" type="text/css" href="http://localhost:8000/MapFour/ion.css">
@@ -9,6 +10,22 @@
     <link rel='stylesheet' type="text/css" href='http://localhost:8000/MapFour/nprogress.css'/> 
   </head>
   <body>
+    <div id="info">
+      <div id="info-logo">
+        <img src="https://cdn3.iconfinder.com/data/icons/musthave/24/Information.png" />
+      </div>
+
+      <h1>Team4</h1>
+      <ul>
+        <li>Burno Chauvet</li>
+        <li>Akram Dweikat</li>
+        <li>Amos Rivera</li>
+        <li>Nick Hargreaves</li>
+      </ul>
+
+      <p>Porject developed during Al Jazeera's hackathon <a href="http://canvas.aljazeera.com/">CANVAS</a>.</p>
+    </div>
+
     <div id="map-wrapper">
       <div id="map-content">
         <div id="map-content-close"><img src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-close-circled-20.png"></div>
@@ -30,12 +47,15 @@
       </div>
       <div id="center">
         <h1 id="main_article_title"></h1>
+        <p id="pubDate"></p>
         <div id="main_article_body"></div>
       </div>
       <div id="content-arrow-right-wrapper">
         <div class="content-arrows" id="content-arrow-right"></div>
       </div>
     </div>
+
+    <div id="footer"></div>
 
     <script type="text/javascript" src='http://localhost:8000/MapFour/nprogress.js'></script>   
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>

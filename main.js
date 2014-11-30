@@ -32,6 +32,7 @@ $(function(){
 
             // for each marker received
             $.each(data['articles'], function(key,article){
+              console.log(data['articles']);
               var markerIcon;
               
 //              if(article.video !== undefined){
@@ -154,11 +155,14 @@ $(function(){
   }
 
   var slideMap = function(){
-    $("#map-wrapper").animate({height:200 },200);
+    $("#map-wrapper").animate({height:300 },{ duration:200, complete: function(){
+
+      google.maps.event.trigger(map, 'resize');    
+    } 
+    });
     $("#date_range_wrapper").slideUp(200);
     $("#date_range_trigger").show();
 
-    google.maps.event.trigger(map, 'resize');    
   }
 
   $("#date_range_trigger").on('click',function(){
@@ -202,13 +206,16 @@ $(function(){
     })
   }
 
-  var mainArticleH1 = $("#main_article_title");
+  var mainArticleH1   = $("#main_article_title");
   var mainArticleBody = $("#main_article_body");;
+  var pubDate         = $("#pubDate");
 
   var loadArticle = function(article, story) {
     $(".content-arrows").show();
+    
     mainArticleH1.text(article.title);
     mainArticleBody.html(article.body);
+    pubDate.text(article.pubDate);
 
     hideSideBar();
 
@@ -306,6 +313,16 @@ $(function(){
 ]
   });
 
+  var info = $("#info");
+
+  info.find("img").on('click', function(){
+    if(info.hasClass("active")){
+      info.removeClass("active");
+    } else {
+      info.addClass("active");
+    }
+  })
+
  var input = $("<input type='text' id='map_search' />"); 
  var search_term = "";
 
@@ -325,7 +342,6 @@ $(function(){
 
     loadMarkers("http://10.52.64.222/index.php/Articles?start="+data_from+"&end="+data_to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng()+"&q="+search_term, function(){
       $this.removeAttr("disabled").val(search_term);
-      console.log("triggered");
     });
   }
 
@@ -344,7 +360,9 @@ $(function(){
  })
 
  map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(input[0]);
+ map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(info[0]);
 
+info.css("display","block");
 
 $("#content-arrow-right").on('click', function(){
   if(indexes[currentIndex+1] !== undefined && markers[indexes[currentIndex+1]] !== undefined ){
@@ -392,6 +410,8 @@ $("#content-arrow-left").on('click', function(){
       },
       onFinish: function (data) {
           
+          window.location.hash = "";
+
           data_from = data.from;
           data_to = data.to;
 
@@ -406,5 +426,4 @@ $("#content-arrow-left").on('click', function(){
 
       }
   });
-
 });

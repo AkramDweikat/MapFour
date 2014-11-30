@@ -5,7 +5,7 @@ html, body, #map-canvas {
 }
 
 body{
-	width:1000px;
+	width:100%;
 	margin:0 auto;
 	font:normal normal 13px arial,sans-serif;
 }
@@ -19,6 +19,7 @@ body{
 	height:400px;
 	position:relative;
 	overflow:hidden;
+	border-bottom:2px solid #aaa;
 }
 
 /* side bar */
@@ -44,7 +45,7 @@ body{
 /* TIMELINE */
 
 #date_range_wrapper {
-	margin-top:30px;
+	padding:30px;	
 }
 
 #map_search {
@@ -69,9 +70,6 @@ body{
 	background:url("https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-arrow-down-24.png") no-repeat center center;
 	display:none;
 	height:30px;
-}
-
-#date_range_trigger:hover {
 	background-color:#eee;
 	cursor:pointer;
 }
@@ -87,11 +85,11 @@ body{
 
 #main-article{
 	overflow:hidden;
-	width:1000px;
+	width:100%;
 }
 
 #center {
-	width:800px;
+	width:80%;
 }
 
 #content-arrow-right-wrapper,#content-arrow-left-wrapper, #center {
@@ -108,9 +106,90 @@ body{
 }
 
 #content-arrow-right-wrapper, #content-arrow-left-wrapper{
-	width:100px;
+	width:10%;
 }
 
 #content-arrow-left {
 	background-image:url("https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-arrow-left-128.png");
+}
+
+#info {
+	display:none;
+	position:absolute;
+	top:10px;
+	left:10px;
+	background:rgba(255,255,255,0.9);
+	padding:20px;
+	overflow:hidden;
+	height:0;
+	width:0;
+}
+
+#info.active {
+	width:400px;
+	height:200px;
+	padding-left:40px;
+}
+
+#info li, #info p {
+	font-size:16px;
+}
+
+#info-logo {
+	position:relative;
+}
+
+#info img {
+	padding:2px;
+	opacity:0.8;
+	cursor:pointer;	
+	position:absolute;
+	top:-15px;
+	left:-15px;
+}
+
+#info.active img {
+	top:-15px;
+	left:-35px;
+}
+
+
+#info:hover img{
+	border-color:#fff;
+	opacity:1;
+}
+
+#pubDate {
+	font-size:20px;
+	color:#666;
+}
+
+#article_list, #article_list li {
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+
+#article_list {
+	margin-top:40px;
+}
+
+#article_list a {
+	border-bottom:1px solid #ccc;
+	padding:5px;
+	color:#46a;
+	display:block;
+	font-size:20px;
+	text-decoration: none;
+}
+
+#article_list a:hover {
+	background:#f4f4f4;
+}
+
+#footer {
+	background:#f4f4f4;
+	border-top:#ccc;
+	height:100px;
+	margin-top:500px;
 }
