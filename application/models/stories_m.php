@@ -26,7 +26,7 @@ class Stories_M extends CI_Model {
     }
 
     public function findRelatedStories($story_id) {
-        $this->db->select("SELECT subq.*, SUM(subq.weight)
+        $query = $this->db->query("SELECT subq.*, SUM(subq.weight) as ranking
             FROM (
                 SELECT s_rel.*,
                   case mv.meta_type
@@ -74,10 +74,10 @@ class Stories_M extends CI_Model {
             ) as subq
             GROUP BY subq.id
             ORDER BY SUM(subq.weight) DESC", FALSE);
-        $query = $this->db->get('stories');
         $result = array();
         foreach ($query->result() as $data) {
-            $result[] = new self($data);
+            // $result[] = new self($data);
+            $result[] = $data;
         }
         return $result;
     }

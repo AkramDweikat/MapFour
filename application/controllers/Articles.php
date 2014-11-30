@@ -8,6 +8,7 @@ class Articles extends CI_Controller {
 
         //load the Articles Model on init
         $this->load->model('Articles_m');
+        $this->load->model('Stories_M');
     }
 
     public function index()
@@ -25,6 +26,18 @@ class Articles extends CI_Controller {
 
         //get articles using module with params
         $data['articles'] = $this->Articles_m->get_articles($start, $end, $location, $q);
+
+        //return json response to view
+        //$this->load->view('frontpage', $data);
+        print json_encode($data);
+
+    }
+
+    public function related() {
+        $story_id = $_GET['story_id'];
+
+        //get articles using module with params
+        $data['articles'] = $this->Stories_M->findRelatedStories($story_id);
 
         //return json response to view
         //$this->load->view('frontpage', $data);
