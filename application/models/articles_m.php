@@ -46,7 +46,6 @@ class Articles_m extends CI_Model {
 
     }
 
-
     public function filter_by_time($all_stories, $start, $end){
 
         $articles = array();

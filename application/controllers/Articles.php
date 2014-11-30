@@ -48,7 +48,3 @@ class Articles extends CI_Controller {
     }
 }
 ?>
-
-
-
-    
