@@ -57,17 +57,22 @@ $(function(){
   // initialize mapp
   var map = new google.maps.Map($("#map-canvas")[0], {
     zoom: 4,
-    center: new google.maps.LatLng(-25.363882, 131.044922),
+    center: new google.maps.LatLng(25.363882, 30.044922),
     panControl: true,
+    mapTypeControl: false,
+    zoomControlOptions: {
+      style: google.maps.ZoomControlStyle.SMALL,
+      position: google.maps.ControlPosition.TOP_RIGHT
+    },
     panControlOptions: {
       position: google.maps.ControlPosition.TOP_RIGHT
     },
     streetViewControl: false,
-    zoomControlOptions: {
-      style: google.maps.ZoomControlStyle.LARGE,
-      position: google.maps.ControlPosition.TOP_RIGHT
-    }
   });
+
+ var input = ($("<input type='text' id='map_search' />")[0]); 
+ map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(input);
+
 
   // click on the 'x' and slide sidebar out
   $("#map-content-close").on('click',function(){
@@ -84,10 +89,6 @@ $(function(){
           return moment(num, "X").format("LL"); // date format
       },
       onFinish: function (data) {
-
-          // when the range changes
-          var from  = moment.unix(data.from);
-          var to    = moment.unix(data.to); 
           
           // get the map boundaries
           var bounds = map.getBounds();
@@ -103,7 +104,10 @@ $(function(){
           NProgress.start();
 
           // ajax get request
-          $.get("https://dl.dropboxusercontent.com/u/6777363/test.json", function(data){
+          $.get("http://10.52.152.79/MapFour/index.php/Articles?start="+data.from+"&end="+data.to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng(), 
+            function(data){
+
+              console.log(data);
 
             // finish progress bar
             NProgress.done();

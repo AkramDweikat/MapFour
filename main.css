@@ -47,3 +47,19 @@ body{
 #date_range_wrapper {
 	margin-top:30px;
 }
+
+#map_search {
+	position:absolute;
+	
+	/* dirty map styles overiding */
+	top:7px !important;
+	right:70px !important;
+
+	background:#fff url("search.png") 95% center no-repeat;
+	border:1px solid #999;
+	border-radius:3px;
+	width:120px;
+	box-shadow:inset 1px 1px 1px #999;
+	padding:5px;
+	padding-right:28px;
+}
