@@ -25,4 +25,8 @@ class Stories extends CI_Controller {
 
 		$this->load->view('stories_parser');
 	}
+
+	public function nyTimes() {
+		$this->load->view('stories_parser');
+	}
 }

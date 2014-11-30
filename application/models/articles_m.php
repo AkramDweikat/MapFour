@@ -25,8 +25,6 @@ class Articles_m extends CI_Model {
 
             $result = $this->db->get();
 
-            print $this->db->last_query();
-
             $all_stories = $result->result_array();
 
             /*

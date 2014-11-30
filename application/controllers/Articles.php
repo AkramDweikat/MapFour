@@ -29,24 +29,14 @@ class Articles extends CI_Controller {
         //get articles using module with params
         $data['articles'] = $this->Articles_m->get_articles($start, $end, $tl, $br, $q);
 
-        //return json response to view
-        //$this->load->view('frontpage', $data);
-        print json_encode($data);
-
+        $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
     public function related() {
         $story_id = $_GET['story_id'];
-
-        //get articles using module with params
         $data['articles'] = $this->Stories_M->findRelatedStories($story_id);
 
-        //return json response to view
-        //$this->load->view('frontpage', $data);
-        print json_encode($data);
-
+        $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
-
-
 }
 ?>
