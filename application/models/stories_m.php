@@ -73,7 +73,6 @@ class Stories_M extends CI_Model {
                 AND mv_rel.meta_value = mv.meta_value
             ) as subq
             GROUP BY subq.id
-            HAVING SUM(subq.weight) >= 12
             ORDER BY subq.pubDate DESC", FALSE);
         $result = array();
         foreach ($query->result() as $data) {
