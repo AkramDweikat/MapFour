@@ -17,8 +17,8 @@ class Articles extends CI_Controller {
         $start = $_GET['start'];
         $end = $_GET['end'];
 
-        $tl = $_GET['tl'];
-        $br = $_GET['br'];
+        $tl = $_GET['br'];
+        $br = $_GET['tl'];
 
         $q = null;
 
