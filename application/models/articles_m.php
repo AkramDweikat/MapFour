@@ -4,11 +4,11 @@ class Articles_m extends CI_Model {
 
     public function get_articles($start, $end, $tl, $br, $q=null){
 
-        if($q==null){
+        //if($q==null){
             //db query to retrieve articles
-            $this->db->select("*");
-            $this->db->from('stories');
-
+        $this->db->select("stories.id, stories.guid, stories.link, stories.title, stories.description, stories.body, stories.latitude, stories.pubDate, stories.latitude,stories.latitude, stories.largeimage, stories.smallimage, stories.source, stories.author, meta_values.id, meta_values.story_id, meta_values.meta_type, meta_value");
+        $this->db->from('stories');
+        $this->db->join("meta_values", "stories.id=meta_values.story_id");
             //faster time filtering
             $this->db->where("UNIX_TIMESTAMP(`pubDate`) BETWEEN '".$start."' AND '".$end."'");
             //faster location filtering
@@ -19,32 +19,19 @@ class Articles_m extends CI_Model {
             $maxx = floatval($br[0]);
             $miny = floatval($br[1]);
             $maxy = floatval($tl[1]);
+
             $this->db->where("latitude BETWEEN '".$minx."' AND '".$maxx."'");
             $this->db->where("longitude BETWEEN '".$miny."' AND '".$maxy."'");
 
+            //check for search term query
+            if($q!=null){
+                $this->db->like('title', $q);
+            }
 
             $result = $this->db->get();
 
-            print $this->db->last_query();
-
-            $all_stories = $result->result_array();
-
-            /*
-            $geocoded_stories = array();
-
-            foreach($all_stories as $s){
-                $s['location'] = $s['latitude'].", ".$s['longitude'];//$this->get_location($s['id']);
-                $geocoded_stories[] = $s;
-            }
-            */
-
-            //filter articles by time bounds
-            // $time_sorted_articles = $this->filter_by_time($geocoded_stories, $start, $end);
-
-            //filter articles by location bounds
-            //$articles = $this->filter_by_location($time_sorted_articles, $location);
-
-            $articles = $all_stories;
+            $articles = $result->result_array();
+        /*
         }else{
 
             $nytimes_key = $this->config->item('nytimes_key');
@@ -59,7 +46,7 @@ class Articles_m extends CI_Model {
             $articles = file_get_contents($url,false,$context);
 
         }
-
+        */
         //return json response
         return $articles;
 
