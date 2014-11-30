@@ -1,18 +1,19 @@
 $(function(){
 
-  // initialize markers array
-  var markers = [];
+  // initialize markers object
+  var markers = {};
+  var articles = {};
 
   // global variable use to hold the map center whenever the map
   // box is resized
   var current_center;
 
   // delete all current markers
-  var setAllMap = function(map){
-    for(var i = 0, l = markers.length; i<l; i++){
-      markers[i].setMap(map);
-      delete markers[i];
-    }
+  var deleteMarkers = function(map){
+    $.each(markers, function(key){
+      markers[key].setMap(map);
+      delete markers[key];      
+    })
   }
 
   // very ugly code to slide sidebar in and out
@@ -98,37 +99,49 @@ $(function(){
           var se = new google.maps.LatLng(sw.lat(), ne.lng());
 
           // delete all markers
-          setAllMap(null);
+          deleteMarkers(null);
 
           // start progress bar
           NProgress.start();
 
           // ajax get request
-          $.get("http://10.52.152.79/MapFour/index.php/Articles?start="+data.from+"&end="+data.to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng(), 
+          $.get("http://10.52.64.222/index.php/Articles?start="+data.from+"&end="+data.to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng(), 
             function(data){
-
-              console.log(data);
 
             // finish progress bar
             NProgress.done();
 
             // for each marker received
-            $.each(data, function(key,marker){
+            $.each(data['articles'], function(key,article){
 
               // create a new marker
               var marker = new google.maps.Marker({
-                position: new google.maps.LatLng(marker.lat,marker.lon),
+                position: new google.maps.LatLng(article.latitude,article.longitude),
                 map: map,
+                animation: google.maps.Animation.DROP,
                 title: 'Click to zoom',
+                id_article: article.id
               });
 
-              // push reference into an array
-              markers.push(marker);
+              var objectKey = article.latitude+article.longitude;
 
+              console.log(objectKey);
+
+              if(articles[article.id] !== undefined){
+                articles[article.id].push(article);
+                markers[article.id].push(marker);
+              } else {                
+                articles[article.id] = [article];
+                markers[article.id]= [marker];
+              }
+     
               // add event listener
               // when you click on a marker show sidebar
               google.maps.event.addListener(marker, 'click', function() {
+                
                 showSideBar();
+
+                console.log(articles[this.id_article].title);
               });
 
               // if it's the last marker (all have been set)
