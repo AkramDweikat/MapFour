@@ -2,28 +2,47 @@
 
 class Articles_m extends CI_Model {
 
-    public function get_articles($start, $end, $location, $q=null){
+    public function get_articles($start, $end, $tl, $br, $q=null){
 
         if($q==null){
             //db query to retrieve articles
             $this->db->select("*");
             $this->db->from('stories');
+
+            //faster time filtering
+            $this->db->where("UNIX_TIMESTAMP(`pubDate`) BETWEEN '".$start."' AND '".$end."'");
+            //faster location filtering
+            $tl = explode(',', $tl);
+            $br = explode(',', $br);
+
+            $minx = floatval($tl[0]);
+            $maxx = floatval($br[0]);
+            $miny = floatval($tl[1]);
+            $maxy = floatval($br[1]);
+
+            $this->db->where("latitude BETWEEN '".$minx."' AND '".$maxx."'");
+            $this->db->where("longitude BETWEEN '".$miny."' AND '".$maxy."'");
+
             $result = $this->db->get();
+
             $all_stories = $result->result_array();
 
+            /*
             $geocoded_stories = array();
 
             foreach($all_stories as $s){
-                $s['location'] = $this->get_location($s['id']);
+                $s['location'] = $s['latitude'].", ".$s['longitude'];//$this->get_location($s['id']);
                 $geocoded_stories[] = $s;
             }
+            */
 
             //filter articles by time bounds
-            $time_sorted_articles = $this->filter_by_time($geocoded_stories, $start, $end);
+            // $time_sorted_articles = $this->filter_by_time($geocoded_stories, $start, $end);
 
             //filter articles by location bounds
-            $articles = $this->filter_by_location($time_sorted_articles, $location);
+            //$articles = $this->filter_by_location($time_sorted_articles, $location);
 
+            $articles = $all_stories;
         }else{
 
             $nytimes_key = $this->config->item('nytimes_key');
@@ -51,7 +70,7 @@ class Articles_m extends CI_Model {
         foreach($all_stories as $story){
 
             $pubDate = strtotime($story['pubDate']);
-
+            //$pubDate = $story['pubDate'];
             if(($pubDate>=$start)&&($pubDate<=$end)){
                 $articles[] = $story;
             }
@@ -62,6 +81,7 @@ class Articles_m extends CI_Model {
 
 
     public function filter_by_location($time_sorted_articles, $location){
+        $this->load->library("PointLocation");
 
         $articles = array();
 
@@ -70,9 +90,12 @@ class Articles_m extends CI_Model {
         //find most granular location
             $story_loc = $this->get_location($story['id']);
 
-        //check if location of article is within bounds
+            //check if location of article is within bounds
+             if($this->pointlocation->pointInPolygon($story_loc, $location)){
 
-            $articles[] = $story;
+                 $articles[] = $story;
+
+             }
 
         }
         return $articles;

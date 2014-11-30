@@ -15,7 +15,9 @@ class Articles extends CI_Controller {
 
         $start = $_GET['start'];
         $end = $_GET['end'];
-        $location = $_GET['location'];
+
+        $tl = $_GET['tl'];
+        $br = $_GET['br'];
 
         $q = null;
 
@@ -24,7 +26,7 @@ class Articles extends CI_Controller {
         }
 
         //get articles using module with params
-        $data['articles'] = $this->Articles_m->get_articles($start, $end, $location, $q);
+        $data['articles'] = $this->Articles_m->get_articles($start, $end, $tl, $br, $q);
 
         //return json response to view
         //$this->load->view('frontpage', $data);
