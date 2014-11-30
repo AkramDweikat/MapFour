@@ -6,7 +6,7 @@ class Articles_m extends CI_Model {
 
         //if($q==null){
             //db query to retrieve articles
-        $this->db->select("stories.id, stories.guid, stories.link, stories.title, stories.description, stories.body, stories.latitude, stories.pubDate, stories.latitude,stories.latitude, stories.largeimage, stories.smallimage, stories.source, stories.author, meta_values.id, meta_values.story_id, meta_values.meta_type, meta_value");
+        $this->db->select("stories.id, stories.guid, stories.link, stories.title, stories.description, stories.body, stories.pubDate, stories.latitude,stories.longitude, stories.largeimage, stories.smallimage, stories.source, stories.author, meta_values.id, meta_values.story_id, meta_values.meta_type, meta_values.meta_value");
         $this->db->from('stories');
         $this->db->join("meta_values", "stories.id=meta_values.story_id");
             //faster time filtering
@@ -28,6 +28,7 @@ class Articles_m extends CI_Model {
                 $this->db->like('title', $q);
             }
 
+            $this->db->group_by('stories.id');
             $result = $this->db->get();
 
             $articles = $result->result_array();
