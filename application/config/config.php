@@ -14,7 +14,7 @@
 | path to your installation.
 |
 */
-$config['base_url']	= '';
+$config['base_url']	= 'http://10.52.152.79/MapFour';
 
 /*
 |--------------------------------------------------------------------------
