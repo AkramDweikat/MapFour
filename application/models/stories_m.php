@@ -73,7 +73,7 @@ class Stories_M extends CI_Model {
                 AND mv_rel.meta_value = mv.meta_value
             ) as subq
             GROUP BY subq.id
-            ORDER BY SUM(subq.weight) DESC", FALSE);
+            ORDER BY subq.pubDate DESC", FALSE);
         $result = array();
         foreach ($query->result() as $data) {
             // $result[] = new self($data);
@@ -133,33 +133,56 @@ class Stories_M extends CI_Model {
         $this->db->update('stories', $this);
     }
 
+    public function insertNYTimes($data) {
+        $this->guid   = $data->{'_id'};
+        $this->link   = $data->web_url;
+        $this->title  = $data->headline->main;
+        $this->description  = $data->snippet;
+        $this->largeimage  = $data->multimedia[1]->url;
+        $this->smallimage  = $data->multimedia[0]->url;
+        $this->source  = $data->source;
+        $this->pubDate = date('Y-m-d H:i:s', strtotime($data->pub_date));
+        $this->author  = $data->byline->original;
+
+        $this->db->insert('stories', $this);
+        $story_id = $this->db->insert_id();
+
+        $this->load->model('Meta_values_M');
+        if(isset($data->keywords)){
+            foreach ($data->keywords as $keyword) {
+                $this->Meta_values_M->insert($story_id, $keyword->name, $keyword->value);
+            }
+        }
+
+        $this->geocode($story_id);
+    }
+
     public function geocode($story_id) {
         if(!isset($this->latitude) || $this->latitude == 0.0 || $this->latitude == "") {
             $address = $this->mostGranularLocation($story_id);
+            if(isset($address)) {
+                $api_key = $this->config->item('google_geocode_api_key');
+                // URL TO HTTP REQUEST
+                $link = "https://maps.googleapis.com/maps/api/geocode/json?address=".urlencode($address)."&key=".$api_key."&sensor=false&oe=utf8";
+                // WE GET FILE CONTENT
+                $page = json_decode(file_get_contents($link), TRUE);
+                $status = $page['status'];
+                if($status=="OK") {
+                    $result = $page['results'][0];
+                    $location = $result['geometry']['location'];
+                    $geoloc = array();
+                    $geoloc['latitude'] = floatval($location['lat']);
+                    $geoloc['longitude'] = floatval($location['lng']);
 
-            $api_key = $this->config->item('google_geocode_api_key');
-            // URL TO HTTP REQUEST
-            $link = "https://maps.googleapis.com/maps/api/geocode/json?address=".$address."&key=".$api_key."&sensor=false&oe=utf8";
-
-            // WE GET FILE CONTENT
-            $page = json_decode(file_get_contents($link), TRUE);
-
-            $status = $page['status'];
-            if($status=="OK") {
-                $result = $page['results'][0];
-                $location = $result['geometry']['location'];
-                $geoloc = array();
-                $geoloc['latitude'] = floatval($location['lat']);
-                $geoloc['longitude'] = floatval($location['lng']);
-
-                $this->db->where('id', $story_id);
-                $this->db->update('stories', $geoloc);
+                    $this->db->where('id', $story_id);
+                    $this->db->update('stories', $geoloc);
+                }
             }
         }
     }
 
     private function mostGranularLocation($story_id) {
-        $location_metas = array('Town', 'City', 'County', 'ProvinceOrState', 'Country');
+        $location_metas = array('glocations', 'Town', 'City', 'County', 'ProvinceOrState', 'Country');
 
         $this->db->select("*");
         $this->db->from('meta_values');

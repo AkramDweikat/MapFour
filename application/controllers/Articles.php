@@ -29,6 +29,10 @@ class Articles extends CI_Controller {
         //get articles using module with params
         $data['articles'] = $this->Articles_m->get_articles($start, $end, $tl, $br, $q);
 
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST');
+        header("Access-Control-Allow-Headers: X-Requested-With");
+
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
@@ -36,7 +40,15 @@ class Articles extends CI_Controller {
         $story_id = $_GET['story_id'];
         $data['articles'] = $this->Stories_M->findRelatedStories($story_id);
 
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST');
+        header("Access-Control-Allow-Headers: X-Requested-With");
+
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 }
 ?>
+
+
+
+    
