@@ -43,29 +43,6 @@ LOCK TABLES `meta_values` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `schema_migrations`
---
-
-DROP TABLE IF EXISTS `schema_migrations`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `schema_migrations` (
-  `version` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  UNIQUE KEY `unique_schema_migrations` (`version`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `schema_migrations`
---
-
-LOCK TABLES `schema_migrations` WRITE;
-/*!40000 ALTER TABLE `schema_migrations` DISABLE KEYS */;
-INSERT INTO `schema_migrations` VALUES ('20141119110035');
-/*!40000 ALTER TABLE `schema_migrations` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `stories`
 --
 
@@ -83,8 +60,10 @@ CREATE TABLE `stories` (
   `smallimage` text COLLATE utf8_unicode_ci,
   `video` text COLLATE utf8_unicode_ci,
   `source` text COLLATE utf8_unicode_ci,
-  `pubDate` text COLLATE utf8_unicode_ci,
+  `pubDate` datetime DEFAULT NULL,
   `author` text COLLATE utf8_unicode_ci,
+  `latitude` DECIMAL(12,8),
+  `longitude` DECIMAL(12,8),
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
