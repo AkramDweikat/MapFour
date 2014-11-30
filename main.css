@@ -192,4 +192,11 @@ body{
 	border-top:#ccc;
 	height:100px;
 	margin-top:500px;
+	clear:both;
+}
+
+#footer img{
+	width:200px;
+	margin-top:20px;
+	margin-left:20px;
 }

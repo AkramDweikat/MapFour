@@ -15,7 +15,26 @@ $(function(){
   // box is resized
   var current_center;
 
+  $("#date_range_wrapper").qtip({
+   content: 'Select a date range to get started!',
+   position: {
+      corner: {
+         target: 'bottomMiddle',
+         tooltip: 'topMiddle'
+      }
+   },
+   style:{
+    name:'cream',
+    padding:15,
+  },
+   show: { ready: true }
+  });
+
+$("#date_range_wrapper").qtip("disable")
   var loadMarkers  = function (url,callback) {
+
+        $("#date_range_wrapper").qtip("hide");
+
           deleteMarkers();
           indexes = [];
           currentIndex = 0;
