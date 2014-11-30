@@ -9,9 +9,9 @@ class Stories extends CI_Controller {
 
 				foreach ($response->body->stories as $story) {
 					$this->load->model('Stories_M');
-		      $record = $this->Stories_M->findByGuid($story->guid);
-					if ($record) {
-						$this->Stories_M->update($story);
+		      $stories_m = $this->Stories_M->findByGuid($story->guid);
+					if ($stories_m) {
+						$stories_m->update($story);
 					} else {
 						$this->Stories_M->insert($story);
 					}
