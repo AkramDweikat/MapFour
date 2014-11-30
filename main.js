@@ -32,7 +32,7 @@ $(function(){
         map.setCenter(current_center);
       } 
     });
-    
+
   }
 
   var showSideBar = function(){
@@ -99,8 +99,14 @@ $(function(){
           // delete all markers
           setAllMap(null);
 
+          // start progress bar
+          NProgress.start();
+
           // ajax get request
           $.get("https://dl.dropboxusercontent.com/u/6777363/test.json", function(data){
+
+            // finish progress bar
+            NProgress.done();
 
             // for each marker received
             $.each(data, function(key,marker){
