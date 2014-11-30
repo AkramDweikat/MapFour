@@ -11,6 +11,10 @@ body{
 	font:normal normal 13px arial,sans-serif;
 }
 
+#map_canvas {
+	width:100%;
+}
+
 #map-wrapper {
 	height:400px;
 	position:relative;
@@ -65,71 +69,6 @@ body{
 	top:10px;
 }
 
-#timeline-dates {
-	position:absolute;
-	top:100%;
-	height:5px;
-	width:100%;
-}
-
-.timeline-date {
-	float:left;
-	margin-left:10px;
-	position:relative;
-	color:#333;
-}
-
-.timeline-date::after {
-	content:'\'';
-	position:absolute;
-	left:50%;
-	width:2px;
-	margin-left:2px;
-	bottom:7px;
-	z-index:9;
-	color:#333;
-}
-
-.timeline-event {
-	border-left:1px solid #999;
-	position:absolute;
-	left:50px;
-	height:100px;
-}
-
-.timeline-event.selected {
-	border-color:#48a;
-}
-
-.timeline-event-title {
-	font-size:14px;
-	margin-top:20px;
-	margin-left:10px;
-	padding:5px;
-	font-weight:normal;
-	border-radius:5px;
-	position:relative;
-	background:#fff;
-}
-
-.timeline-event.selected .timeline-event-title {
-	color:#fff;
-	background:#48a;
-}
-
-.timeline-event-title::after {
-	content:'';
-	position:absolute;
-	right:100%;
-	top:50%;
-	margin-top:-10px;
-	width: 0; 
-	height: 0; 
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent; 
-	border-right:10px solid #fff; 	
-}
-
-.timeline-event.selected .timeline-event-title::after {
-	border-right-color:#48a;
+#date_range_wrapper {
+	margin-top:30px;
 }
