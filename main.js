@@ -3,7 +3,7 @@ $(function(){
   // initialize markers object
   var markers = {};
   var articles = {};
-  var data_from, data_to;
+  var data_from = "1406749707&" , data_to = "1412106507";
   var global_selected;
   var indexes = [];
   var currentIndex = 0;
@@ -307,17 +307,31 @@ $(function(){
   });
 
  var input = $("<input type='text' id='map_search' />"); 
+ var search_term = "";
 
  input.on('keyup', function(e){
-  console.log(e.keyCode);
+
+  $this = $(this);
   //enter
   if(e.keyCode == 13){
-    
+    search_term = $this.val();
+    $this.attr("disabled","disabled").val("loading...").animate({width:"120px"},50);
+  
+    var bounds = map.getBounds();
+    var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+    var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+    var nw = new google.maps.LatLng(ne.lat(), sw.lng());
+    var se = new google.maps.LatLng(sw.lat(), ne.lng());
+
+    loadMarkers("http://10.52.64.222/index.php/Articles?start="+data_from+"&end="+data_to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng()+"&q="+search_term, function(){
+      $this.removeAttr("disabled").val(search_term);
+      console.log("triggered");
+    });
   }
 
   //esc
   if(e.keyCode == 27){
-    $(this).trigger('blur');
+    $this.trigger('blur');
   }
  });
 
