@@ -3,15 +3,7 @@
 class Articles_m extends CI_Model {
 
     public function get_articles($start, $end, $tl, $br, $q=null){
-
-        if($q==null){
-            //db query to retrieve articles
-            $this->db->select("*");
-            $this->db->from('stories');
-
-            //faster time filtering
-            $this->db->where("UNIX_TIMESTAMP(`pubDate`) BETWEEN '".$start."' AND '".$end."'");
-            //faster location filtering
+            //process location bounds
             $tl = explode(',', $tl);
             $br = explode(',', $br);
 
@@ -19,46 +11,37 @@ class Articles_m extends CI_Model {
             $maxx = floatval($br[0]);
             $miny = floatval($br[1]);
             $maxy = floatval($tl[1]);
+
+            //create query string
+            $this->db->select('stories.id, stories.guid, stories.link, stories.title, stories.description, stories.body, stories.pubDate, stories.latitude,stories.longitude, stories.largeimage, stories.smallimage, stories.source, stories.author, GROUP_CONCAT(meta_values.meta_value SEPARATOR ",") as mv', false);
+
+            $this->db->from('stories');
+            if($q!=null){
+                $this->db->join("meta_values", "stories.id=meta_values.story_id and meta_values.meta_value like '".$q."'");
+            }else{
+                $this->db->join("meta_values", "stories.id=meta_values.story_id");
+            }
+            //faster time filtering
+            $this->db->where("UNIX_TIMESTAMP(`pubDate`) BETWEEN '".$start."' AND '".$end."'");
             $this->db->where("latitude BETWEEN '".$minx."' AND '".$maxx."'");
             $this->db->where("longitude BETWEEN '".$miny."' AND '".$maxy."'");
+            //check for search term query
+
+            $this->db->group_by('stories.id');
+
+
 
 
             $result = $this->db->get();
 
-            $all_stories = $result->result_array();
+            $articles = $result->result_array();
 
-            /*
-            $geocoded_stories = array();
+        return $articles;
 
-            foreach($all_stories as $s){
-                $s['location'] = $s['latitude'].", ".$s['longitude'];//$this->get_location($s['id']);
-                $geocoded_stories[] = $s;
-            }
-            */
+    }
 
-            //filter articles by time bounds
-            // $time_sorted_articles = $this->filter_by_time($geocoded_stories, $start, $end);
+    public function get_by_term($q, $articles){
 
-            //filter articles by location bounds
-            //$articles = $this->filter_by_location($time_sorted_articles, $location);
-
-            $articles = $all_stories;
-        }else{
-
-            $nytimes_key = $this->config->item('nytimes_key');
-
-            $start = date("Ymd", $start);
-            $end = date("Ymd", $end);
-
-            $url = "http://api.nytimes.com/svc/search/v2/articlesearch.json?callback=svc_search_v2_articlesearch&q=".$q."&sort=newest&hl=true&api-key=".$nytimes_key."&begin_date=".$start."&end_date=".$end;
-
-            $context = stream_context_create(array('http' => array('header'=>'Connection: close\r\n')));
-
-            $articles = file_get_contents($url,false,$context);
-
-        }
-
-        //return json response
         return $articles;
 
     }
