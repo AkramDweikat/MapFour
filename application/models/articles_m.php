@@ -62,6 +62,7 @@ class Articles_m extends CI_Model {
 
 
     public function filter_by_location($time_sorted_articles, $location){
+        $this->load->library("PointLocation");
 
         $articles = array();
 
@@ -70,9 +71,12 @@ class Articles_m extends CI_Model {
         //find most granular location
             $story_loc = $this->get_location($story['id']);
 
-        //check if location of article is within bounds
+            //check if location of article is within bounds
+             if($this->pointlocation->pointInPolygon($story_loc, $location)){
 
-            $articles[] = $story;
+                 $articles[] = $story;
+
+             }
 
         }
         return $articles;
