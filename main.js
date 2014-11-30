@@ -51,7 +51,6 @@ $("#date_range_wrapper").qtip("disable")
 
             // for each marker received
             $.each(data['articles'], function(key,article){
-              console.log(data['articles']);
               var markerIcon;
               
 //              if(article.video !== undefined){
@@ -74,7 +73,7 @@ $("#date_range_wrapper").qtip("disable")
               if(current !== undefined && current == objectKey){
                 marker.setIcon(selectedIcon);
                 map.panTo(marker.position);
-                currentIndex = indexes.length;
+                currentIndex = indexes.length-1;
               }
 
               // push reference into an array
@@ -389,7 +388,7 @@ $("#content-arrow-right").on('click', function(){
     markers[indexes[currentIndex+1]][0].setIcon(selectedIcon);
     map.panTo(markers[indexes[currentIndex+1]][0].position);
     currentIndex++;
-    loadArticle(articles[indexes[currentIndex+1]][0],true);
+    loadArticle(articles[indexes[currentIndex]][0],true);
   }
 
   $("#content-arrow-right").toggle(indexes[currentIndex+1] !== undefined);
@@ -403,7 +402,7 @@ $("#content-arrow-left").on('click', function(){
     markers[indexes[currentIndex-1]][0].setIcon(selectedIcon);
     map.panTo(markers[indexes[currentIndex-1]][0].position);
     currentIndex--;
-    loadArticle(articles[indexes[currentIndex-1]][0], true);
+    loadArticle(articles[indexes[currentIndex]][0], true);
   }
   if(indexes[currentIndex-1] !== undefined){
     $("#content-arrow-left").show();   
