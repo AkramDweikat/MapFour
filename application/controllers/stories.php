@@ -5,7 +5,7 @@ class Stories extends CI_Controller {
 		$api_key = $this->config->item('al_jazeera_api_key');
 
 		$pagenumber = 1;
-		for ($pagenumber = 0; $pagenumber <= 1000; $pagenumber++) {
+		for ($pagenumber = 0; $pagenumber <= 5; $pagenumber++) {
 			try {
 				$response = \Httpful\Request::get('http://devapi.aljazeera.com/v1/en/stories/latest?format=json&apikey=' . $api_key . '&pagenumber=' . $pagenumber)->send();
 
@@ -30,7 +30,7 @@ class Stories extends CI_Controller {
 		$api_key = $this->config->item('ny_times_api_key');
 
 		$page = 1;
-		for ($page = 0; $page <= 100; $page++) {
+		for ($page = 0; $page <= 5; $page++) {
 			try {
 				$response = \Httpful\Request::get('http://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=' . $api_key . '&page=' . $page)->send();
 				foreach ($response->body->response->docs as $doc) {
