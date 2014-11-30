@@ -25,6 +25,63 @@ class Stories_M extends CI_Model {
         return $query->num_rows() > 0 ? new self(array_shift($query->result())) : null;
     }
 
+    public function findRelatedStories($story_id) {
+        $this->db->select("SELECT subq.*, SUM(subq.weight)
+            FROM (
+                SELECT s_rel.*,
+                  case mv.meta_type
+                     when 'Person' then 5
+                     when 'Facility' then 5
+                     when 'PoliticalEvent' then 5
+                     when 'Product' then 5
+                     when 'Organization' then 4
+                     when 'IndustryTerm' then 4
+                     when 'ProgrammingLanguage' then 4
+                     when 'EntertainmentAwardEvent' then 4
+                     when 'NaturalFeature' then 4
+                     when 'PublishedMedium' then 4
+                     when 'City' then 4
+                     when 'SportsEvent' then 4
+                     when 'SportsLeague' then 4
+                     when 'MedicalCondition' then 4
+                     when 'Company' then 3
+                     when 'RadioStation' then 3
+                     when 'TVStation' then 3
+                     when 'TVShow' then 3
+                     when 'Movie' then 3
+                     when 'Technology' then 3
+                     when 'Holiday' then 3
+                     when 'OperatingSystem' then 3
+                     when 'MedicalTreatment' then 3
+                     when 'SportsGame' then 3
+                     when 'MarketIndex' then 3
+                     when 'MusicAlbum' then 3
+                     when 'Country' then 2
+                     when 'Currency' then 1
+                     when 'ProvinceOrState' then 1
+                     when 'Continent' then 1
+                     when 'Region' then 2
+                     when 'Position' then 2
+                     else 1
+                  end as weight
+                FROM stories s
+                  INNER JOIN meta_values mv ON (s.id = mv.story_id),
+                     stories s_rel
+                  INNER JOIN meta_values mv_rel ON (s_rel.id = mv_rel.story_id)
+                WHERE s.id = $story_id
+                AND mv_rel.meta_type = mv.meta_type
+                AND mv_rel.meta_value = mv.meta_value
+            ) as subq
+            GROUP BY subq.id
+            ORDER BY SUM(subq.weight) DESC", FALSE);
+        $query = $this->db->get('stories');
+        $result = array();
+        foreach ($query->result() as $data) {
+            $result[] = new self($data);
+        }
+        return $result;
+    }
+
     public function insert($data) {
         $this->guid   = $data->guid;
         $this->link   = $data->link;
@@ -102,7 +159,7 @@ class Stories_M extends CI_Model {
     }
 
     private function mostGranularLocation($story_id) {
-        $location_metas = array('Town', 'City', 'County', 'Province', 'State', 'Country');
+        $location_metas = array('Town', 'City', 'County', 'ProvinceOrState', 'Country');
 
         $this->db->select("*");
         $this->db->from('meta_values');

@@ -2,10 +2,12 @@
 
 class Stories extends CI_Controller {
 	public function index() {
+		$api_key = $this->config->item('al_jazeera_api_key');
+
 		$pagenumber = 1;
 		for ($pagenumber = 0; $pagenumber <= 1000; $pagenumber++) {
 			try {
-				$response = \Httpful\Request::get('http://devapi.aljazeera.com/v1/en/stories/latest?format=json&apikey=UBsPSKqownYvsDaE9l96Jq1aAOQOHXgF&pagenumber=' . $pagenumber)->send();
+				$response = \Httpful\Request::get('http://devapi.aljazeera.com/v1/en/stories/latest?format=json&apikey=' . $api_key . '&pagenumber=' . $pagenumber)->send();
 
 				foreach ($response->body->stories as $story) {
 					$this->load->model('Stories_M');
