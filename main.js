@@ -7,6 +7,9 @@ $(function(){
   var global_selected;
   var indexes = [];
   var currentIndex = 0;
+  var selectedIcon ='https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-64.png';
+
+  var defaultIcon = 'https://cdn1.iconfinder.com/data/icons/google_jfk_icons_by_carlosjj/64/news.png';
 
   // global variable use to hold the map center whenever the map
   // box is resized
@@ -32,14 +35,13 @@ $(function(){
 //              if(article.video !== undefined){
 //                markerIcon = 'https://cdn0.iconfinder.com/data/icons/web-8/106/Television-64.png';
 //              } else {
-                markerIcon = 'https://cdn1.iconfinder.com/data/icons/google_jfk_icons_by_carlosjj/64/news.png';
 //              }
 
               // create a new marker
               var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(article.latitude,article.longitude),
                 map: map,
-                icon:markerIcon,
+                icon:defaultIcon,
                 animation: google.maps.Animation.DROP,
                 title: 'Click to zoom',
               });
@@ -48,8 +50,8 @@ $(function(){
 
 
               if(current !== undefined && current == objectKey){
-                marker.setIcon('https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-64.png');
-                map.setCenter(marker.position);
+                marker.setIcon(selectedIcon);
+                map.panTo(marker.position);
                 currentIndex = indexes.length;
               }
 
@@ -118,7 +120,7 @@ $(function(){
       duration: 500, 
       complete: function(){
         google.maps.event.trigger(map, 'resize');
-        map.setCenter(current_center);
+        map.panTo(current_center);
       } 
     });
 
@@ -137,7 +139,7 @@ $(function(){
       duration: 500, 
       complete: function(){
         google.maps.event.trigger(map, 'resize');
-        map.setCenter(current_center);
+        map.panTo(current_center);
       } 
     });
 
@@ -195,16 +197,17 @@ $(function(){
   var mainArticleH1 = $("#main_article_title");
   var mainArticleBody = $("#main_article_body");;
 
-  var loadArticle = function(article) {
+  var loadArticle = function(article, story) {
     $(".content-arrows").show();
     mainArticleH1.text(article.title);
     mainArticleBody.html(article.body);
 
     hideSideBar();
 
-    loadMarkers("http://10.52.64.222/index.php/Articles/related?story_id="+article.id);
-
-    slideMap();
+    if(story != true){
+      loadMarkers("http://10.52.64.222/index.php/Articles/related?story_id="+article.id);
+      slideMap();
+    }
   }
 
   // initialize mapp
@@ -304,6 +307,28 @@ $(function(){
  map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(input[0]);
 
 
+$("#content-arrow-right").on('click', function(){
+  if(indexes[currentIndex+1] !== undefined && markers[indexes[currentIndex+1]] !== undefined ){
+    markers[indexes[currentIndex]][0].setIcon(defaultIcon);
+    markers[indexes[currentIndex+1]][0].setIcon(selectedIcon);
+    map.panTo(markers[indexes[currentIndex+1]][0].position);
+    currentIndex++;
+    loadArticle(articles[indexes[currentIndex+1]][0],true);
+  }
+
+});
+
+
+$("#content-arrow-left").on('click', function(){
+  if(indexes[currentIndex-1] !== undefined && markers[indexes[currentIndex-1]] !== undefined ){
+    markers[indexes[currentIndex]][0].setIcon(defaultIcon);
+    markers[indexes[currentIndex-1]][0].setIcon(selectedIcon);
+    map.panTo(markers[indexes[currentIndex-1]][0].position);
+    currentIndex--;
+    loadArticle(articles[indexes[currentIndex-1]][0], true);
+  }
+});
+
   // click on the 'x' and slide sidebar out
   $("#map-content-close").on('click',function(){
 	   hideSideBar();
@@ -314,7 +339,8 @@ $(function(){
       type: "double", // range
       min: +moment().subtract(1, "years").format("X"),
       max: +moment().format("X"),
-      from: +moment().subtract(6, "months").format("X"),
+      from: +moment().subtract(7, "months").format("X"),
+      to: +moment().subtract(4, "months").format("X"),
       prettify: function (num) {
           return moment(num, "X").format("LL"); // date format
       },
