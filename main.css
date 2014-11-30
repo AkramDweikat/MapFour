@@ -62,3 +62,49 @@ body{
 	padding:5px;
 	padding-right:28px;
 }
+
+#date_range_trigger {
+	background:url("https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-arrow-down-24.png") no-repeat center center;
+	display:none;
+	height:30px;
+}
+
+#date_range_trigger:hover {
+	background-color:#eee;
+	cursor:pointer;
+}
+
+.content-arrows {
+	height:500px;
+	background-position: center center;
+	width:100px;
+	background-repeat: no-repeat;
+	display:none;
+	opacity:0.5;
+}
+
+#main-article{
+	overflow:hidden;
+	width:1000px;
+}
+
+#center {
+	width:800px;
+}
+
+.content-arrows, #center {
+	float:left;
+}
+
+.content-arrows:hover {
+	opacity:1;
+	cursor:pointer;
+}
+
+#content-arrow-right {
+	background-image:url("https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-arrow-right-128.png");
+}
+
+#content-arrow-left {
+	background-image:url("https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-arrow-left-128.png");
+}

@@ -4,12 +4,15 @@ $(function(){
   var markers = {};
   var articles = {};
   var data_from, data_to;
+  var global_selected;
+  var indexes = [];
+  var currentIndex = 0;
 
   // global variable use to hold the map center whenever the map
   // box is resized
   var current_center;
 
-  var loadMarkers  = function (url) {
+  var loadMarkers  = function (url,callback) {
           deleteMarkers();
 
           // start progress bar
@@ -18,21 +21,37 @@ $(function(){
           // ajax get request
           $.get(url, function(data){
 
+            var current = window.location.hash.split("#")[1];
             // finish progress bar
             NProgress.done();
 
             // for each marker received
             $.each(data['articles'], function(key,article){
+              var markerIcon;
+              
+//              if(article.video !== undefined){
+//                markerIcon = 'https://cdn0.iconfinder.com/data/icons/web-8/106/Television-64.png';
+//              } else {
+                markerIcon = 'https://cdn1.iconfinder.com/data/icons/google_jfk_icons_by_carlosjj/64/news.png';
+//              }
 
               // create a new marker
               var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(article.latitude,article.longitude),
                 map: map,
+                icon:markerIcon,
                 animation: google.maps.Animation.DROP,
                 title: 'Click to zoom',
               });
 
               var objectKey = String(marker.position.lat())+String(marker.position.lng());
+
+
+              if(current !== undefined && current == objectKey){
+                marker.setIcon('https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-64.png');
+                map.setCenter(marker.position);
+                currentIndex = indexes.length;
+              }
 
               // push reference into an array
               if(markers[objectKey] !== undefined){
@@ -42,6 +61,8 @@ $(function(){
                 articles[objectKey] = [article];
                 markers[objectKey] = [marker];                
               }
+
+              indexes.push(objectKey);
 
               // add event listener
               // when you click on a marker show sidebar
@@ -53,9 +74,14 @@ $(function(){
                 if(articleList.length > 1) {
                   loadArticleList(articleList);
                 } else {
-                  loadArticle(articleList[0]);
+                  window.location.hash = String(marker.position.lat())+String(marker.position.lng());
+                  loadArticle(articleList[0], marker);
                 }
               });
+
+              if(callback !== undefined){                  
+                callback.call();
+              }
 
             })
 
@@ -74,6 +100,8 @@ $(function(){
       delete markers[key];
 
     })
+
+    markers = {};
   }
 
   // very ugly code to slide sidebar in and out
@@ -115,10 +143,27 @@ $(function(){
 
   }
 
+  var slideMap = function(){
+    $("#map-wrapper").animate({height:200 },200);
+    $("#date_range_wrapper").slideUp(200);
+    $("#date_range_trigger").show();
+
+    google.maps.event.trigger(map, 'resize');    
+  }
+
+  $("#date_range_trigger").on('click',function(){
+    $("#map-wrapper").animate({height:400 },200);
+    $("#date_range_wrapper").slideDown(200);
+    $(this).hide();
+  });
+
   var ul = $("#article_list");
 
   ul.delegate('a','click',function(e){
     e.preventDefault();
+
+    window.location.hash = $(this).data('latlng');
+                  
     loadArticle(articles[$(this).data('latlng')][0]);
   });
 
@@ -151,6 +196,7 @@ $(function(){
   var mainArticleBody = $("#main_article_body");;
 
   var loadArticle = function(article) {
+    $(".content-arrows").show();
     mainArticleH1.text(article.title);
     mainArticleBody.html(article.body);
 
@@ -158,6 +204,7 @@ $(function(){
 
     loadMarkers("http://10.52.64.222/index.php/Articles/related?story_id="+article.id);
 
+    slideMap();
   }
 
   // initialize mapp
@@ -174,6 +221,78 @@ $(function(){
       position: google.maps.ControlPosition.TOP_RIGHT
     },
     streetViewControl: false,
+    styles:[
+    {
+        "featureType": "road",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "transit",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative.province",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.park",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "water",
+        "stylers": [
+            {
+                "color": "#004b76"
+            }
+        ]
+    },
+    {
+        "featureType": "landscape.natural",
+        "stylers": [
+            {
+                "visibility": "on"
+            },
+            {
+                "color": "#fff6cb"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative.country",
+        "elementType": "geometry.stroke",
+        "stylers": [
+            {
+                "visibility": "on"
+            },
+            {
+                "color": "#7f7d7a"
+            },
+            {
+                "lightness": 10
+            },
+            {
+                "weight": 1
+            }
+        ]
+    }
+]
   });
 
  var input = $("<input type='text' id='map_search' />"); 
