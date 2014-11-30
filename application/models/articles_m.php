@@ -17,13 +17,15 @@ class Articles_m extends CI_Model {
 
             $minx = floatval($tl[0]);
             $maxx = floatval($br[0]);
-            $miny = floatval($tl[1]);
-            $maxy = floatval($br[1]);
-
+            $miny = floatval($br[1]);
+            $maxy = floatval($tl[1]);
             $this->db->where("latitude BETWEEN '".$minx."' AND '".$maxx."'");
             $this->db->where("longitude BETWEEN '".$miny."' AND '".$maxy."'");
 
+
             $result = $this->db->get();
+
+            print $this->db->last_query();
 
             $all_stories = $result->result_array();
 
