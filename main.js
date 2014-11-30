@@ -3,21 +3,81 @@ $(function(){
   // initialize markers object
   var markers = {};
   var articles = {};
+  var data_from, data_to;
 
   // global variable use to hold the map center whenever the map
   // box is resized
   var current_center;
 
+  var loadMarkers  = function (url) {
+          deleteMarkers();
+
+          // start progress bar
+          NProgress.start();
+
+          // ajax get request
+          $.get(url, function(data){
+
+            // finish progress bar
+            NProgress.done();
+
+            // for each marker received
+            $.each(data['articles'], function(key,article){
+
+              // create a new marker
+              var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(article.latitude,article.longitude),
+                map: map,
+                animation: google.maps.Animation.DROP,
+                title: 'Click to zoom',
+              });
+
+              var objectKey = String(marker.position.lat())+String(marker.position.lng());
+
+              // push reference into an array
+              if(markers[objectKey] !== undefined){
+                articles[objectKey].push(article);
+                markers[objectKey].push(marker);
+              } else {
+                articles[objectKey] = [article];
+                markers[objectKey] = [marker];                
+              }
+
+              // add event listener
+              // when you click on a marker show sidebar
+              google.maps.event.addListener(marker, 'click', function() {
+                
+                var articleList = articles[String(marker.position.lat())+String(marker.position.lng())];
+
+                // more than one article on that marker
+                if(articleList.length > 1) {
+                  loadArticleList(articleList);
+                } else {
+                  loadArticle(articleList[0]);
+                }
+              });
+
+            })
+
+          },'json')
+
+  }
+
   // delete all current markers
-  var deleteMarkers = function(map){
-    $.each(markers, function(key){
-      markers[key].setMap(map);
-      delete markers[key];      
+  var deleteMarkers = function(){
+    $.each(markers, function(key,m){
+      $.each(m, function(k){
+        m[k].setMap(null);        
+        delete m[k];      
+      });
+
+      delete markers[key];
+
     })
   }
 
   // very ugly code to slide sidebar in and out
-    var hideSideBar = function(){
+  var hideSideBar = function(){
 
     current_center = map.getCenter();
 
@@ -55,6 +115,51 @@ $(function(){
 
   }
 
+  var ul = $("#article_list");
+
+  ul.delegate('a','click',function(e){
+    e.preventDefault();
+    loadArticle(articles[$(this).data('latlng')][0]);
+  });
+
+  var loadArticleList = function(list){
+    showSideBar();
+
+    ul.html("");
+
+    $.each(list, function(key,article){
+      var li = $("<li />");
+
+      var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(article.latitude,article.longitude),
+        map: null,
+        animation: google.maps.Animation.DROP,
+        title: 'Click to zoom',
+      });
+
+      var objectKey = String(marker.position.lat())+String(marker.position.lng());
+
+      li.append(
+        $("<a />").attr("href",article.link).data('latlng',objectKey).text(article.title)
+      );
+
+      ul.append(li);      
+    })
+  }
+
+  var mainArticleH1 = $("#main_article_title");
+  var mainArticleBody = $("#main_article_body");;
+
+  var loadArticle = function(article) {
+    mainArticleH1.text(article.title);
+    mainArticleBody.html(article.body);
+
+    hideSideBar();
+
+    loadMarkers("http://10.52.64.222/index.php/Articles/related?story_id="+article.id);
+
+  }
+
   // initialize mapp
   var map = new google.maps.Map($("#map-canvas")[0], {
     zoom: 4,
@@ -71,8 +176,13 @@ $(function(){
     streetViewControl: false,
   });
 
- var input = ($("<input type='text' id='map_search' />")[0]); 
- map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(input);
+ var input = $("<input type='text' id='map_search' />"); 
+
+ input.on('keyup', function(e){
+  if(e.keyCode == 13){}
+ });
+
+ map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(input[0]);
 
 
   // click on the 'x' and slide sidebar out
@@ -91,6 +201,9 @@ $(function(){
       },
       onFinish: function (data) {
           
+          data_from = data.from;
+          data_to = data.to;
+
           // get the map boundaries
           var bounds = map.getBounds();
           var ne = bounds.getNorthEast(); // LatLng of the north-east corner
@@ -98,60 +211,7 @@ $(function(){
           var nw = new google.maps.LatLng(ne.lat(), sw.lng());
           var se = new google.maps.LatLng(sw.lat(), ne.lng());
 
-          // delete all markers
-          deleteMarkers(null);
-
-          // start progress bar
-          NProgress.start();
-
-          // ajax get request
-          $.get("http://10.52.64.222/index.php/Articles?start="+data.from+"&end="+data.to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng(), 
-            function(data){
-
-            // finish progress bar
-            NProgress.done();
-
-            // for each marker received
-            $.each(data['articles'], function(key,article){
-
-              // create a new marker
-              var marker = new google.maps.Marker({
-                position: new google.maps.LatLng(article.latitude,article.longitude),
-                map: map,
-                animation: google.maps.Animation.DROP,
-                title: 'Click to zoom',
-                id_article: article.id
-              });
-
-              var objectKey = article.latitude+article.longitude;
-
-              console.log(objectKey);
-
-              if(articles[article.id] !== undefined){
-                articles[article.id].push(article);
-                markers[article.id].push(marker);
-              } else {                
-                articles[article.id] = [article];
-                markers[article.id]= [marker];
-              }
-     
-              // add event listener
-              // when you click on a marker show sidebar
-              google.maps.event.addListener(marker, 'click', function() {
-                
-                showSideBar();
-
-                console.log(articles[this.id_article].title);
-              });
-
-              // if it's the last marker (all have been set)
-              // center the map on the first marker
-              if (key === data.length -1){
-                map.setCenter(new google.maps.LatLng(data[0].lat,data[0].lon));
-              }            
-            })
-
-          },'json')
+          loadMarkers("http://10.52.64.222/index.php/Articles?start="+data.from+"&end="+data.to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng());
 
       }
   });
