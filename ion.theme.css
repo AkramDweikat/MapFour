@@ -12,7 +12,7 @@
 .irs-bar,
 .irs-bar-edge,
 .irs-slider {
-    background: url(http://localhost:8000/MapFour/sprite.png) repeat-x;
+    background: url(sprite.png) repeat-x;
 }
 
 .irs {

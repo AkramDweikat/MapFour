@@ -1,5 +1,12 @@
 $(function(){
 
+  var base_url = "";
+  if (window.location.host === "localhost"){
+    base_url = "http://map4.org/";
+  } else {    
+    base_url = "";
+  }
+
   // initialize markers object
   var markers = {};
   var articles = {};
@@ -49,15 +56,17 @@ $("#date_range_wrapper").qtip("disable")
             // finish progress bar
             NProgress.done();
 
+            if(callback !== undefined){                  
+              callback(data['articles'].length);
+            }
+
             // for each marker received
             $.each(data['articles'], function(key,article){
+              if (article.latitude == 0 && article.longitude == 0) {
+                //discard
+              } else {
               var markerIcon;
               
-//              if(article.video !== undefined){
-//                markerIcon = 'https://cdn0.iconfinder.com/data/icons/web-8/106/Television-64.png';
-//              } else {
-//              }
-
               // create a new marker
               var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(article.latitude,article.longitude),
@@ -108,11 +117,8 @@ $("#date_range_wrapper").qtip("disable")
                 $("#content-arrow-left").toggle(indexes[currentIndex-1] !== undefined);
               }
 
-              if(callback !== undefined){                  
-                callback.call();
               }
-
-            })
+            });
 
           },'json')
 
@@ -238,7 +244,7 @@ $("#date_range_wrapper").qtip("disable")
     hideSideBar();
 
     if(story != true){
-      loadMarkers("http://10.52.64.222/index.php/Articles/related?story_id="+article.id);
+      loadMarkers(base_url+"index.php/Articles/related?story_id="+article.id);
       slideMap();
     }
   }
@@ -358,8 +364,12 @@ $("#date_range_wrapper").qtip("disable")
     var nw = new google.maps.LatLng(ne.lat(), sw.lng());
     var se = new google.maps.LatLng(sw.lat(), ne.lng());
 
-    loadMarkers("http://10.52.64.222/index.php/Articles?start="+data_from+"&end="+data_to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng()+"&q="+search_term, function(){
+    loadMarkers(base_url+"index.php/Articles?start="+data_from+"&end="+data_to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng()+"&q="+search_term, function(numArticles){
       $this.removeAttr("disabled").val(search_term);
+
+      if(numArticles==0){
+        alert("No articles found within this timefrime.");
+      }
     });
   }
 
@@ -382,13 +392,29 @@ $("#date_range_wrapper").qtip("disable")
 
 info.css("display","block");
 
+var rightKey = 0;
+
 $("#content-arrow-right").on('click', function(){
   if(indexes[currentIndex+1] !== undefined && markers[indexes[currentIndex+1]] !== undefined ){
-    markers[indexes[currentIndex]][0].setIcon(defaultIcon);
-    markers[indexes[currentIndex+1]][0].setIcon(selectedIcon);
-    map.panTo(markers[indexes[currentIndex+1]][0].position);
+
     currentIndex++;
-    loadArticle(articles[indexes[currentIndex]][0],true);
+
+    if(indexes[currentIndex] == indexes[currentIndex-1]){
+      rightKey++;
+    } else {
+      rightKey = 0;
+    }
+
+    markers[indexes[currentIndex-1]][rightKey].setIcon(defaultIcon);
+    markers[indexes[currentIndex]][rightKey].setIcon(selectedIcon);
+    map.panTo(markers[indexes[currentIndex]][rightKey].position);
+
+    if(articles[indexes[currentIndex]].length > 1){
+      loadArticle(articles[indexes[currentIndex]][rightKey],true);
+    } else {
+      loadArticle(articles[indexes[currentIndex]][0],true);
+    }
+
   }
 
   $("#content-arrow-right").toggle(indexes[currentIndex+1] !== undefined);
@@ -396,19 +422,31 @@ $("#content-arrow-right").on('click', function(){
 });
 
 
+var leftKey = 0;
 $("#content-arrow-left").on('click', function(){
-  if(indexes[currentIndex-1] !== undefined && markers[indexes[currentIndex-1]] !== undefined ){
-    markers[indexes[currentIndex]][0].setIcon(defaultIcon);
-    markers[indexes[currentIndex-1]][0].setIcon(selectedIcon);
-    map.panTo(markers[indexes[currentIndex-1]][0].position);
-    currentIndex--;
-    loadArticle(articles[indexes[currentIndex]][0], true);
-  }
-  if(indexes[currentIndex-1] !== undefined){
-    $("#content-arrow-left").show();   
+
+  if(indexes[currentIndex] == indexes[currentIndex+1]){
+    leftKey++;
   } else {
-    $("#content-arrow-left").hide();   
+    leftKey = 0;
   }
+
+  if(indexes[currentIndex-1] !== undefined && markers[indexes[currentIndex-1]] !== undefined ){
+
+    currentIndex--;
+    markers[indexes[currentIndex+1]][leftKey].setIcon(defaultIcon);
+    markers[indexes[currentIndex]][leftKey].setIcon(selectedIcon);
+    map.panTo(markers[indexes[currentIndex]][leftKey].position);
+    
+    if(articles[indexes[currentIndex]].length > 1){
+      loadArticle(articles[indexes[currentIndex]][leftKey],true);
+    } else {
+      loadArticle(articles[indexes[currentIndex]][0],true);
+    }
+
+  }
+
+  $("#content-arrow-left").toggle(indexes[currentIndex-1] !== undefined);
 });
 
   // click on the 'x' and slide sidebar out
@@ -440,7 +478,7 @@ $("#content-arrow-left").on('click', function(){
           var nw = new google.maps.LatLng(ne.lat(), sw.lng());
           var se = new google.maps.LatLng(sw.lat(), ne.lng());
 
-          loadMarkers("http://10.52.64.222/index.php/Articles?start="+data.from+"&end="+data.to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng());
+          loadMarkers(base_url+"index.php/Articles?start="+data.from+"&end="+data.to+"&tl="+nw.lat()+","+nw.lng()+"&br="+se.lat()+","+se.lng());
 
       }
   });
