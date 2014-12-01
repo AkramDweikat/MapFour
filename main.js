@@ -78,11 +78,10 @@ $("#date_range_wrapper").qtip("disable")
 
               var objectKey = String(marker.position.lat())+String(marker.position.lng());
 
-
               if(current !== undefined && current == objectKey){
                 marker.setIcon(selectedIcon);
                 map.panTo(marker.position);
-                currentIndex = indexes.length-1;
+                currentIndex = indexes.length;
               }
 
               // push reference into an array
