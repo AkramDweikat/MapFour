@@ -200,3 +200,12 @@ body{
 	margin-top:20px;
 	margin-left:20px;
 }
+
+#source {
+	color:#888;
+}
+
+#source a{
+	color:#8ac;
+	font-weight:bold;
+}

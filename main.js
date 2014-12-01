@@ -1,11 +1,7 @@
 $(function(){
 
   var base_url = "";
-  if (window.location.host === "localhost"){
-    base_url = "http://map4.org/";
-  } else {    
-    base_url = "";
-  }
+  base_url = "http://map4.org/";
 
   // initialize markers object
   var markers = {};
@@ -232,6 +228,7 @@ $("#date_range_wrapper").qtip("disable")
   var mainArticleH1   = $("#main_article_title");
   var mainArticleBody = $("#main_article_body");;
   var pubDate         = $("#pubDate");
+  var source          = $("#source");
 
   var loadArticle = function(article, story) {
     $(".content-arrows").show();
@@ -239,6 +236,7 @@ $("#date_range_wrapper").qtip("disable")
     mainArticleH1.text(article.title);
     mainArticleBody.html(article.body);
     pubDate.text(article.pubDate);
+    source.html(article.source+': <a href="'+article.link+'">'+article.link+'</a>');
 
     hideSideBar();
 
